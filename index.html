@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub - Curated Resources for Developers</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-light: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-dark: #1d1d1f;
+            --text-light: #86868b;
+            --accent-blue: #0071e3;
+            --border-color: #d2d2d7;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            padding: 40px 0 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--accent-blue);
+        }
+        
+        .tagline {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        
+        /* Navigation */
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .category-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        /* Main Content */
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--accent-blue);
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .resource-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .resource-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .resource-title a {
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+        
+        .resource-title a:hover {
+            color: var(--accent-blue);
+        }
+        
+        .resource-desc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .resource-link {
+            display: inline-block;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+        
+        .resource-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+        
+        .resource-link i {
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            .category-btn {
+                padding: 6px 15px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 30px 0 15px;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-compass"></i>
+                <span>DevHub</span>
+            </div>
+            <p class="tagline">Curated resources for developers, designers, and tech entrepreneurs</p>
+        </header>
+        
+        <div class="categories">
+            <button class="category-btn active">All</button>
+            <button class="category-btn">Research</button>
+            <button class="category-btn">Domains</button>
+            <button class="category-btn">Analytics</button>
+            <button class="category-btn">Templates</button>
+            <button class="category-btn">Resources</button>
+        </div>
+        
+        <h2 class="section-title">
+            <i class="fas fa-search"></i>
+            Research & Tools
+        </h2>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-arrow-trend-down"></i>
+                    <a href="https://www.searchsuggest.tips/?keyword=">Google Suggest</a>
+                </h3>
+                <p class="resource-desc">Discover keyword suggestions from Google's autocomplete feature.</p>
+                <a href="https://www.searchsuggest.tips/?keyword=" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-trophy"></i>
+                    <a href="https://www.toolify.ai/Best-AI-Tools-revenue">Toolify AI Rankings</a>
+                </h3>
+                <p class="resource-desc">Top AI tools ranked by revenue and popularity.</p>
+                <a href="https://www.toolify.ai/Best-AI-Tools-revenue" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-lightbulb"></i>
+                    <a href="https://theresanaiforthat.com/requests">AI Requests Board</a>
+                </h3>
+                <p class="resource-desc">See what AI tools people are requesting and looking for.</p>
+                <a href="https://theresanaiforthat.com/requests" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-chart-line"></i>
+                    <a href="https://ahrefs.com/keyword-difficulty">Keyword Difficulty Checker</a>
+                </h3>
+                <p class="resource-desc">Evaluate how hard it is to rank for specific keywords.</p>
+                <a href="https://ahrefs.com/keyword-difficulty" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+        </div>
+        
+        <h2 class="section-title">
+            <i class="fas fa-globe"></i>
+            Domains & Hosting
+        </h2>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-search"></i>
+                    <a href="https://leandomainsearch.com/">Lean Domain Search</a>
+                </h3>
+                <p class="resource-desc">Find available domain names quickly and easily.</p>
+                <a href="https://leandomainsearch.com/" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-bolt"></i>
+                    <a href="https://query.domains/">Query Domains</a>
+                </h3>
+                <p class="resource-desc">Instant domain availability checker with bulk search.</p>
+                <a href="https://query.domains/" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-rocket"></i>
+                    <a href="https://spaceship.com/">Spaceship Domains</a>
+                </h3>
+                <p class="resource-desc">Modern domain registration with transparent pricing.</p>
+                <a href="https://spaceship.com/" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-cloud"></i>
+                    <a href="https://vercel.com/">Vercel Hosting</a>
+                </h3>
+                <p class="resource-desc">Next-generation frontend cloud for static sites.</p>
+                <a href="https://vercel.com/" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+        </div>
+        
+        <h2 class="section-title">
+            <i class="fas fa-chart-bar"></i>
+            Analytics & SEO
+        </h2>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fab fa-google"></i>
+                    <a href="https://search.google.com/search-console">Google Search Console</a>
+                </h3>
+                <p class="resource-desc">Monitor and optimize your site's presence in Google Search.</p>
+                <a href="https://search.google.com/search-console" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-chart-pie"></i>
+                    <a href="https://analytics.google.com/analytics/web/">Google Analytics</a>
+                </h3>
+                <p class="resource-desc">Comprehensive website traffic and user behavior analytics.</p>
+                <a href="https://analytics.google.com/analytics/web/" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fab fa-microsoft"></i>
+                    <a href="https://www.bing.com/webmasters/submiturl">Bing Webmaster Tools</a>
+                </h3>
+                <p class="resource-desc">Submit URLs and monitor your site's performance on Bing.</p>
+                <a href="https://www.bing.com/webmasters/submiturl" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-link"></i>
+                    <a href="https://ahrefs.com/free-seo-tools">Ahrefs SEO Tools</a>
+                </h3>
+                <p class="resource-desc">Free tools for backlink analysis and SEO research.</p>
+                <a href="https://ahrefs.com/free-seo-tools" class="resource-link">Visit site <i class="fas fa-external-link-alt"></i></a>
+            </div>
+        </div>
+        
+        <h2 class="section-title">
+            <i class="fas fa-code"></i>
+            Templates & Boilerplates
+        </h2>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fab fa-react"></i>
+                    <a href="https://github.com/ixartz/Next-js-Boilerplate">Next.js Boilerplate</a>
+                </h3>
+                <p class="resource-desc">Production-ready Next.js template with App and Page Router.</p>
+                <a href="https://github.com/ixartz/Next-js-Boilerplate" class="resource-link">View on GitHub <i class="fab fa-github"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-shopping-cart"></i>
+                    <a href="https://github.com/ixartz/SaaS-Boilerplate">SaaS Boilerplate</a>
+                </h3>
+                <p class="resource-desc">Complete SaaS template with Next.js, Tailwind, and TypeScript.</p>
+                <a href="https://github.com/ixartz/SaaS-Boilerplate" class="resource-link">View on GitHub <i class="fab fa-github"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-window-maximize"></i>
+                    <a href="https://github.com/weijunext/landing-page-boilerplate">Landing Page Template</a>
+                </h3>
+                <p class="resource-desc">Versatile landing page template for various marketing campaigns.</p>
+                <a href="https://github.com/weijunext/landing-page-boilerplate" class="resource-link">View on GitHub <i class="fab fa-github"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-compass"></i>
+                    <a href="https://github.com/fre123-com/fre123-nav/">Navigation Template</a>
+                </h3>
+                <p class="resource-desc">One-click setup for your own navigation website.</p>
+                <a href="https://github.com/fre123-com/fre123-nav/" class="resource-link">View on GitHub <i class="fab fa-github"></i></a>
+            </div>
+        </div>
+        
+        <h2 class="section-title">
+            <i class="fas fa-book"></i>
+            Learning Resources
+        </h2>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fab fa-reddit"></i>
+                    <a href="https://liberating-doll-b8a.notion.site/Reddit-1a8e8aed91b18021839ecba8b74e530b">Reddit Communities</a>
+                </h3>
+                <p class="resource-desc">Curated list of valuable Reddit communities for developers.</p>
+                <a href="https://liberating-doll-b8a.notion.site/Reddit-1a8e8aed91b18021839ecba8b74e530b" class="resource-link">Visit resource <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fab fa-google"></i>
+                    <a href="https://developers.google.com/search/docs/fundamentals/creating-helpful-content">SEO Fundamentals</a>
+                </h3>
+                <p class="resource-desc">Google's official guide to creating helpful content for SEO.</p>
+                <a href="https://developers.google.com/search/docs/fundamentals/creating-helpful-content" class="resource-link">Read guide <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-chart-line"></i>
+                    <a href="https://ahrefs.com/websites#trending">Trending Websites</a>
+                </h3>
+                <p class="resource-desc">Discover top trending websites by traffic growth.</p>
+                <a href="https://ahrefs.com/websites#trending" class="resource-link">View trends <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            
+            <div class="resource-card">
+                <h3 class="resource-title">
+                    <i class="fas fa-video"></i>
+                    <a href="https://docs.google.com/spreadsheets/d/1QOdqq9KbjQj1JZO43vc1pir2rnEEsMUXzTDATrOCn2k/edit?gid=0#gid=0">AI Video Tools</a>
+                </h3>
+                <p class="resource-desc">Comprehensive spreadsheet of AI-powered video tools.</p>
+                <a href="https://docs.google.com/spreadsheets/d/1QOdqq9KbjQj1JZO43vc1pir2rnEEsMUXzTDATrOCn2k/edit?gid=0#gid=0" class="resource-link">View spreadsheet <i class="fas fa-external-link-alt"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2023 DevHub. Curated with <i class="fas fa-heart" style="color:#ff2e63;"></i> for developers.</p>
+            <p>An open-source project. Contributions welcome on GitHub.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple category filtering functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // In a real implementation, this would filter the resources
+                    // For this demo, we'll just show an alert
+                    if(this.textContent !== 'All') {
+                        alert(`Filtering by category: ${this.textContent}`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
