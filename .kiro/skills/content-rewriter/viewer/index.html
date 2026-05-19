@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>改写历史 · 公众号改写助手</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: #f5f4f0;
+    color: #2c2c2c;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ---------- 顶部 ---------- */
+  header {
+    background: #fff;
+    border-bottom: 1px solid #e0ddd6;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  header h1 { font-size: 15px; font-weight: 600; }
+  header h1 .icon { margin-right: 6px; }
+  header .actions { display: flex; gap: 10px; align-items: center; }
+  header .status { font-size: 12px; color: #888; }
+
+  button {
+    padding: 6px 14px;
+    border: 1px solid #d0ccc0;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #2c2c2c;
+    transition: all 0.15s;
+  }
+  button:hover { background: #f5f4f0; border-color: #b0aca0; }
+  button.primary { background: #2c2c2c; color: #fff; border-color: #2c2c2c; }
+  button.primary:hover { background: #444; }
+
+  /* ---------- 主体 ---------- */
+  main { flex: 1; display: flex; overflow: hidden; }
+
+  /* 左侧 */
+  .sidebar {
+    width: 300px;
+    background: #fff;
+    border-right: 1px solid #e0ddd6;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .search {
+    padding: 10px;
+    border-bottom: 1px solid #e0ddd6;
+    flex-shrink: 0;
+  }
+  .search input {
+    width: 100%;
+    padding: 7px 12px;
+    border: 1px solid #d0ccc0;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+  }
+  .search input:focus { border-color: #2c2c2c; }
+  .list { flex: 1; overflow-y: auto; }
+  .list-empty {
+    padding: 40px 20px;
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .list-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0ede4;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: background 0.1s;
+  }
+  .list-item:hover { background: #faf9f5; }
+  .list-item.active {
+    background: #ebe7da;
+    border-left-color: #2c2c2c;
+  }
+  .list-item .title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.45;
+    margin-bottom: 4px;
+    color: #2c2c2c;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .list-item .meta {
+    font-size: 11px;
+    color: #999;
+  }
+
+  /* 右侧 */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    background: #f5f4f0;
+  }
+  .empty-state {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    text-align: center;
+  }
+  .empty-state .icon { font-size: 36px; margin-bottom: 12px; }
+  .empty-state p { font-size: 13px; line-height: 1.7; }
+  .empty-state .hint { font-size: 12px; color: #bbb; margin-top: 8px; }
+
+  .article-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  .article {
+    background: #fff;
+    border-radius: 6px;
+    padding: 40px 56px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .article-meta {
+    font-size: 12px;
+    color: #888;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #ebe8df;
+    margin-bottom: 18px;
+    line-height: 1.8;
+  }
+  .article-meta .sep { margin: 0 8px; color: #d0ccc0; }
+  .article-meta a { color: #2c5fa8; text-decoration: none; }
+  .article-meta a:hover { text-decoration: underline; }
+
+  .article-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  /* Markdown 渲染样式 */
+  .md {
+    font-size: 16px;
+    line-height: 1.85;
+    color: #2c2c2c;
+    word-break: break-word;
+  }
+  .md h1 { font-size: 24px; font-weight: 700; margin: 0 0 24px; line-height: 1.4; }
+  .md h2 { font-size: 19px; font-weight: 700; margin: 30px 0 14px; line-height: 1.4; }
+  .md h3 { font-size: 17px; font-weight: 600; margin: 24px 0 10px; }
+  .md p { margin: 0 0 16px; }
+  .md blockquote {
+    border-left: 3px solid #d0ccc0;
+    padding: 4px 16px;
+    color: #666;
+    margin: 16px 0;
+    background: #faf9f5;
+  }
+  .md blockquote p { margin: 4px 0; }
+  .md code {
+    background: #f0ede4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px;
+  }
+  .md pre {
+    background: #f0ede4;
+    padding: 14px 16px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .md pre code { background: none; padding: 0; font-size: 13px; }
+  .md ul, .md ol { padding-left: 26px; margin: 12px 0 16px; }
+  .md li { margin: 4px 0; }
+  .md hr {
+    border: 0;
+    border-top: 1px solid #e0ddd6;
+    margin: 24px 0;
+  }
+  .md hr.soft {
+    border: 0;
+    text-align: center;
+    margin: 18px 0;
+    color: #b0aca0;
+    letter-spacing: 4px;
+    font-size: 14px;
+  }
+  .md hr.soft::before { content: "——"; }
+  .md strong { font-weight: 600; }
+  .md em { font-style: italic; }
+  .md a { color: #2c5fa8; }
+  .md table { border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .md th, .md td { border: 1px solid #e0ddd6; padding: 6px 12px; }
+  .md th { background: #f5f4f0; font-weight: 600; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2c2c2c;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="icon">📚</span>改写历史</h1>
+  <div class="actions">
+    <span id="status" class="status"></span>
+    <button id="refreshBtn" style="display:none;">🔄 刷新</button>
+    <button id="pickDirBtn" class="primary">选择 history 目录</button>
+  </div>
+</header>
+
+<main>
+  <aside class="sidebar">
+    <div class="search">
+      <input id="searchInput" type="text" placeholder="🔍 搜索标题或正文..." />
+    </div>
+    <div id="list" class="list">
+      <div class="list-empty">
+        还没有加载文章<br>
+        点击右上角"选择 history 目录"
+      </div>
+    </div>
+  </aside>
+
+  <section class="content" id="content">
+    <div class="empty-state">
+      <div>
+        <div class="icon">📝</div>
+        <p>点击右上角"选择 history 目录"加载文章</p>
+        <p class="hint">建议选择 <code>.kiro/skills/content-rewriter/history/</code></p>
+        <p class="hint">支持 Chromium 系浏览器（Chrome / Edge / Arc / Brave）</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ============================================================
+// 状态
+// ============================================================
+let articles = [];        // 已加载文章
+let activeIdx = -1;       // 当前选中
+let currentDirHandle = null;  // 用于刷新
+
+// ============================================================
+// 极简 Markdown 解析器（够用即止）
+// ============================================================
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderInline(s) {
+  // 加粗 **xxx**
+  s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  // 行内代码 `xxx`
+  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  // 斜体 *xxx*（避免与 ** 冲突）
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  // 链接 [文本](url)
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  return s;
+}
+
+function parseFrontmatter(md) {
+  const m = md.match(/^---\s*\n([\s\S]+?)\n---\s*\n([\s\S]*)$/);
+  if (!m) return { fm: {}, body: md };
+  const fm = {};
+  m[1].split('\n').forEach(line => {
+    const km = line.match(/^([\w_]+)\s*:\s*(.*)$/);
+    if (km) {
+      let v = km[2].trim();
+      // 去掉前后引号
+      if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+        v = v.slice(1, -1);
+      }
+      fm[km[1]] = v;
+    }
+  });
+  return { fm, body: m[2] };
+}
+
+function renderMd(md) {
+  const lines = md.split('\n');
+  let html = '';
+  let inCode = false;
+  let codeBuf = [];
+  let inList = false;
+  let listType = '';
+  let para = [];
+
+  function flushPara() {
+    if (para.length === 0) return;
+    const text = para.join('\n').trim();
+    if (text) {
+      const inner = text.split('\n').map(l => renderInline(escapeHtml(l))).join('<br>');
+      html += '<p>' + inner + '</p>';
+    }
+    para = [];
+  }
+  function flushList() {
+    if (inList) {
+      html += '</' + listType + '>';
+      inList = false;
+      listType = '';
+    }
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // 代码块
+    if (line.startsWith('```')) {
+      if (inCode) {
+        html += '<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>';
+        codeBuf = [];
+        inCode = false;
+      } else {
+        flushPara(); flushList();
+        inCode = true;
+      }
+      continue;
+    }
+    if (inCode) { codeBuf.push(line); continue; }
+
+    // 引用
+    const bq = line.match(/^>\s?(.*)$/);
+    if (bq) {
+      flushPara(); flushList();
+      // 收集连续引用行
+      const buf = [bq[1]];
+      while (i + 1 < lines.length) {
+        const next = lines[i + 1].match(/^>\s?(.*)$/);
+        if (next) { buf.push(next[1]); i++; } else break;
+      }
+      html += '<blockquote>' + buf.map(l => '<p>' + renderInline(escapeHtml(l)) + '</p>').join('') + '</blockquote>';
+      continue;
+    }
+
+    // 标题
+    const h = line.match(/^(#{1,6})\s+(.+?)\s*#*$/);
+    if (h) {
+      flushPara(); flushList();
+      const level = h[1].length;
+      html += '<h' + level + '>' + renderInline(escapeHtml(h[2])) + '</h' + level + '>';
+      continue;
+    }
+
+    // 软分隔（中文破折号 ——）
+    if (line.trim() === '——' || line.trim() === '———' || line.trim() === '————') {
+      flushPara(); flushList();
+      html += '<hr class="soft">';
+      continue;
+    }
+
+    // 标准分隔线
+    if (/^(-{3,}|={3,}|\*{3,})$/.test(line.trim())) {
+      flushPara(); flushList();
+      html += '<hr>';
+      continue;
+    }
+
+    // 无序列表
+    const ul = line.match(/^[-*+]\s+(.+)$/);
+    if (ul) {
+      flushPara();
+      if (!inList || listType !== 'ul') { flushList(); html += '<ul>'; inList = true; listType = 'ul'; }
+      html += '<li>' + renderInline(escapeHtml(ul[1])) + '</li>';
+      continue;
+    }
+
+    // 有序列表
+    const ol = line.match(/^\d+\.\s+(.+)$/);
+    if (ol) {
+      flushPara();
+      if (!inList || listType !== 'ol') { flushList(); html += '<ol>'; inList = true; listType = 'ol'; }
+      html += '<li>' + renderInline(escapeHtml(ol[1])) + '</li>';
+      continue;
+    }
+
+    // 空行
+    if (line.trim() === '') {
+      flushPara(); flushList();
+      continue;
+    }
+
+    // 普通段落
+    flushList();
+    para.push(line);
+  }
+  flushPara(); flushList();
+  return html;
+}
+
+// ============================================================
+// 元数据提取
+// ============================================================
+function extractTitle(body, fmTitle) {
+  if (fmTitle) return fmTitle;
+  // 找第一个 # 开头的标题
+  const m = body.match(/^#\s+(.+)$/m);
+  if (m) return m[1].trim();
+  return null;
+}
+
+function countChinese(text) {
+  // 粗略字数：中文 + 英文单词
+  const cn = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const en = (text.match(/\b[a-zA-Z]+\b/g) || []).length;
+  return cn + en;
+}
+
+// ============================================================
+// 加载逻辑
+// ============================================================
+async function pickDirectory() {
+  if (!window.showDirectoryPicker) {
+    alert('当前浏览器不支持 File System Access API。\n\n请使用 Chrome / Edge / Arc / Brave 等 Chromium 系浏览器。\n\n降级方案：可以直接把 .md 文件拖到本页面。');
+    return;
+  }
+  try {
+    const dirHandle = await window.showDirectoryPicker({ mode: 'read' });
+    currentDirHandle = dirHandle;
+    document.getElementById('refreshBtn').style.display = '';
+    await loadFromDirectory(dirHandle);
+  } catch (e) {
+    if (e.name !== 'AbortError') {
+      console.error(e);
+      alert('打开目录失败：' + e.message);
+    }
+  }
+}
+
+async function refreshDirectory() {
+  if (!currentDirHandle) return;
+  await loadFromDirectory(currentDirHandle);
+}
+
+async function loadFromDirectory(dirHandle) {
+  const loaded = [];
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind !== 'file') continue;
+    if (!entry.name.endsWith('.md')) continue;
+    if (entry.name.toLowerCase() === 'readme.md') continue;
+    try {
+      const file = await entry.getFile();
+      const text = await file.text();
+      loaded.push(buildArticle(entry.name, text, file.lastModified));
+    } catch (e) {
+      console.warn('读取失败：' + entry.name, e);
+    }
+  }
+  articles = loaded.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+  activeIdx = articles.length > 0 ? 0 : -1;
+  document.getElementById('status').textContent = '已加载 ' + articles.length + ' 篇';
+  renderList();
+  renderArticle();
+}
+
+async function loadFromFiles(fileList) {
+  const loaded = [];
+  for (const file of fileList) {
+    if (!file.name.endsWith('.md')) continue;
+    if (file.name.toLowerCase() === 'readme.md') continue;
+    const text = await file.text();
+    loaded.push(buildArticle(file.name, text, file.lastModified));
+  }
+  articles = loaded.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+  activeIdx = articles.length > 0 ? 0 : -1;
+  document.getElementById('status').textContent = '已加载 ' + articles.length + ' 篇';
+  renderList();
+  renderArticle();
+}
+
+function buildArticle(filename, text, lastModified) {
+  const { fm, body } = parseFrontmatter(text);
+  const title = extractTitle(body, fm.title) || filename.replace(/\.md$/, '');
+  const date = fm.date || (filename.match(/^(\d{4}-\d{2}-\d{2})/) || [])[1] || '';
+  const time = fm.time || (filename.match(/^\d{4}-\d{2}-\d{2}[-_](\d{4})/) || [])[1] || '';
+  const wordCount = fm.word_count || String(countChinese(body));
+  // 排序键：用文件名前缀（带日期/时间）；如果没有就退化为修改时间
+  const sortKey = filename.match(/^(\d{4}-\d{2}-\d{2})/) ? filename : '0000-' + new Date(lastModified).toISOString();
+
+  return {
+    filename,
+    title,
+    date,
+    time,
+    sourceUrl: fm.source_url || '',
+    angle: fm.angle || '',
+    wordCount,
+    body,
+    html: renderMd(body),
+    sortKey,
+  };
+}
+
+// ============================================================
+// UI 渲染
+// ============================================================
+function renderList() {
+  const filter = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const listEl = document.getElementById('list');
+  listEl.innerHTML = '';
+
+  const visible = articles.filter(a => {
+    if (!filter) return true;
+    return a.title.toLowerCase().includes(filter) || a.body.toLowerCase().includes(filter);
+  });
+
+  if (visible.length === 0) {
+    listEl.innerHTML = '<div class="list-empty">' + (articles.length === 0 ? '还没有加载文章<br>点击右上角"选择 history 目录"' : '没有匹配的文章') + '</div>';
+    return;
+  }
+
+  visible.forEach(a => {
+    const idx = articles.indexOf(a);
+    const div = document.createElement('div');
+    div.className = 'list-item' + (idx === activeIdx ? ' active' : '');
+    const metaParts = [a.date, a.wordCount ? (a.wordCount + ' 字') : ''].filter(Boolean);
+    div.innerHTML =
+      '<div class="title">' + escapeHtml(a.title) + '</div>' +
+      '<div class="meta">' + metaParts.join(' · ') + '</div>';
+    div.onclick = () => { activeIdx = idx; renderList(); renderArticle(); };
+    listEl.appendChild(div);
+  });
+}
+
+function renderArticle() {
+  const contentEl = document.getElementById('content');
+  if (activeIdx < 0 || activeIdx >= articles.length) {
+    contentEl.innerHTML = '<div class="empty-state"><div><div class="icon">👈</div><p>从左侧选一篇</p></div></div>';
+    return;
+  }
+  const a = articles[activeIdx];
+  const metaParts = [];
+  if (a.date) metaParts.push('📅 ' + escapeHtml(a.date) + (a.time ? ' ' + a.time.slice(0,2) + ':' + a.time.slice(2) : ''));
+  if (a.angle) metaParts.push('🎯 ' + escapeHtml(a.angle));
+  if (a.wordCount) metaParts.push('📝 ' + escapeHtml(a.wordCount) + ' 字');
+  if (a.sourceUrl) metaParts.push('🔗 <a href="' + escapeHtml(a.sourceUrl) + '" target="_blank">原文</a>');
+  const meta = metaParts.join('<span class="sep">·</span>');
+
+  contentEl.innerHTML =
+    '<div class="article-wrap"><article class="article">' +
+      '<div class="article-meta">' + meta + '</div>' +
+      '<div class="article-actions">' +
+        '<button onclick="copyMarkdown()">📋 复制 Markdown</button>' +
+        '<button onclick="copyPlain()">📄 复制纯文本</button>' +
+        '<button onclick="copyTitle()">🏷 仅复制标题</button>' +
+      '</div>' +
+      '<div class="md">' + a.html + '</div>' +
+    '</article></div>';
+  contentEl.scrollTop = 0;
+}
+
+// ============================================================
+// 复制 / Toast
+// ============================================================
+function showToast(text) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function copyMarkdown() {
+  const a = articles[activeIdx];
+  if (!a) return;
+  navigator.clipboard.writeText(a.body).then(() => showToast('已复制 Markdown'));
+}
+
+function copyPlain() {
+  const a = articles[activeIdx];
+  if (!a) return;
+  // 极简：去除 markdown 标记
+  const plain = a.body
+    .replace(/^---\s*\n[\s\S]+?\n---\s*\n/, '')      // frontmatter
+    .replace(/^#+\s+/gm, '')                           // 标题符号
+    .replace(/\*\*([^*\n]+)\*\*/g, '$1')               // 粗体
+    .replace(/`([^`\n]+)`/g, '$1')                     // 行内代码
+    .replace(/^\s*[-*+]\s+/gm, '')                     // 列表
+    .replace(/^\s*\d+\.\s+/gm, '')
+    .replace(/^>\s?/gm, '')                            // 引用
+    .replace(/\n{3,}/g, '\n\n');
+  navigator.clipboard.writeText(plain).then(() => showToast('已复制纯文本'));
+}
+
+function copyTitle() {
+  const a = articles[activeIdx];
+  if (!a) return;
+  navigator.clipboard.writeText(a.title).then(() => showToast('已复制标题'));
+}
+
+// ============================================================
+// 事件绑定
+// ============================================================
+document.getElementById('pickDirBtn').addEventListener('click', pickDirectory);
+document.getElementById('refreshBtn').addEventListener('click', refreshDirectory);
+document.getElementById('searchInput').addEventListener('input', renderList);
+
+// 拖拽支持（降级方案 / 也可拖目录）
+document.addEventListener('dragover', e => { e.preventDefault(); });
+document.addEventListener('drop', async e => {
+  e.preventDefault();
+  const items = e.dataTransfer.items;
+  if (items && items.length && items[0].getAsFileSystemHandle) {
+    try {
+      const handle = await items[0].getAsFileSystemHandle();
+      if (handle && handle.kind === 'directory') {
+        currentDirHandle = handle;
+        document.getElementById('refreshBtn').style.display = '';
+        await loadFromDirectory(handle);
+        return;
+      }
+    } catch (err) { /* fallthrough */ }
+  }
+  const files = Array.from(e.dataTransfer.files || []).filter(f => f.name.endsWith('.md'));
+  if (files.length) loadFromFiles(files);
+});
+
+// 键盘快捷键
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'j' || e.key === 'ArrowDown') {
+    if (activeIdx < articles.length - 1) { activeIdx++; renderList(); renderArticle(); }
+  } else if (e.key === 'k' || e.key === 'ArrowUp') {
+    if (activeIdx > 0) { activeIdx--; renderList(); renderArticle(); }
+  }
+});
+</script>
+</body>
+</html>
